@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import movies from "./data/movies.json";
-import { getFilms } from "./service/getFilms";
+import { getFilms } from "./core/service/getFilms";
 
 const Movie = ({ title, year }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -24,11 +24,11 @@ const Movie = ({ title, year }) => {
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState(false);
-  const [films, setFilms] = useState([]);
+  const [films, setFilms] = useState();
   const [filteredFilms, setFilteredFilms] = useState([]);
 
-  const getAllFilms = () => {
-    const films = getFilms();
+  const getAllFilms = async () => {
+    const films = await getFilms.getAllFilms();
     return films;
   };
 
@@ -45,10 +45,9 @@ export const App = () => {
   };
 
   useEffect(() => {
-    console.log(films.films);
-    // console.log(films.films.filter(films.film));
-    // setFilteredFilms(films.films.filter((film) => findByName(film)));
-
+    if (!films) return;
+    const results = films.filter((film) => findByName(film));
+    setFilteredFilms(results);
     setFilter(false);
   }, [films, searchTerm]);
 
@@ -73,16 +72,18 @@ export const App = () => {
         <section>
           {!filter && filteredFilms.length > 0 && (
             <ul className="grid" data-testid="grid">
-              {filteredFilms.map((key, index) => {
-                <li key={res.id}>
-                  <p>{filteredFilms.title[index]}</p>
-                  <p>{filteredFilms.title[key]}</p>
-                </li>;
-              })}
+              {filteredFilms.map((film) => (
+                <li key={film.id}>
+                  <p>{film.title}</p>
+                  <p>{film.year}</p>
+                </li>
+              ))}
             </ul>
           )}
         </section>
-        <Movie filteredFilms={films}></Movie>
+        {filteredFilms.map((film) => (
+          <Movie key={film.id} title={film.title} year={film.year} />
+        ))}
 
         <div className="placeholder">
           <p>
