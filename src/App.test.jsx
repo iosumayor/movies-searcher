@@ -1,10 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { getFilms } from "./core/service/getFilms";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { FilmService } from "./core/service/getFilms";
 import { App } from "./App";
 import userEvent from "@testing-library/user-event";
-
-vi.mock("./core/service/getFilms");
 
 const mockFilms = [
   { id: 1, title: "Interstellar", year: 2014 },
@@ -12,9 +10,19 @@ const mockFilms = [
   { id: 3, title: "Interest in AI", year: 2023 },
 ];
 
+vi.mock("./core/service/getFilms", () => {
+  return {
+    FilmService: vi.fn().mockImplementation(() => {
+      return {
+        getAllFilms: vi.fn().mockResolvedValue(mockFilms),
+      };
+    }),
+  };
+});
+
 describe("App Component", () => {
   beforeEach(() => {
-    getFilms.getAllFilms.mockResolvedValue(mockFilms);
+    FilmService.mockClear();
   });
 
   it("displays the subtitle", () => {
@@ -34,7 +42,6 @@ describe("App Component", () => {
 
   it("filtra las películas que coinciden con el término de búsqueda y pueden aparecer varias veces", async () => {
     render(<App />);
-
     const input = screen.getByPlaceholderText("Buscar películas por título...");
 
     await userEvent.type(input, "inter");
