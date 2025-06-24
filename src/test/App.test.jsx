@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { FilmService } from "./core/service/getFilms";
-import { App } from "./App";
+import { FilmService } from "../core/service/getFilms";
+import { App } from "../App";
 import userEvent from "@testing-library/user-event";
 
 const mockFilms = [
@@ -10,7 +10,7 @@ const mockFilms = [
   { id: 3, title: "Interest in AI", year: 2023 },
 ];
 
-vi.mock("./core/service/getFilms", () => {
+vi.mock("../core/service/getFilms", () => {
   return {
     FilmService: vi.fn().mockImplementation(() => {
       return {
