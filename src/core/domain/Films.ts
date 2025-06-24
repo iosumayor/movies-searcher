@@ -6,7 +6,3 @@ export interface Films {
   genre: string;
   description: string;
 }
-
-export interface FilmsDTO {
-  films: Films[];
-}
