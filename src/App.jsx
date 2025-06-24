@@ -4,12 +4,19 @@ import movies from "./data/movies.json";
 import { getFilms } from "./service/getFilms";
 
 const Movie = ({ title, year }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const handleLikeClick = () => {
+    setIsLiked(!isLiked);
+  };
   return (
     <div className="movie-card">
       <div className="movie-info">
         <h3 className="movie-title">{title}</h3>
         <p className="movie-year">{year}</p>
       </div>
+      <button className="like-button" onClick={handleLikeClick} type="button">
+        {isLiked ? "❤️" : "🤍"} Me gusta
+      </button>
     </div>
   );
 };
@@ -38,8 +45,9 @@ export const App = () => {
   };
 
   useEffect(() => {
-    console.log(films);
-    setFilteredFilms(films);
+    console.log(films.films);
+    // console.log(films.films.filter(films.film));
+    // setFilteredFilms(films.films.filter((film) => findByName(film)));
 
     setFilter(false);
   }, [films, searchTerm]);
@@ -74,6 +82,7 @@ export const App = () => {
             </ul>
           )}
         </section>
+        <Movie filteredFilms={films}></Movie>
 
         <div className="placeholder">
           <p>
