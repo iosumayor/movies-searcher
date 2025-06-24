@@ -1,55 +1,37 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import { Movie } from "./_components/Movie";
 import movies from "./data/movies.json";
-import { getFilms } from "./service/getFilms";
-
-const Movie = ({ title, year }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const handleLikeClick = () => {
-    setIsLiked(!isLiked);
-  };
-  return (
-    <div className="movie-card">
-      <div className="movie-info">
-        <h3 className="movie-title">{title}</h3>
-        <p className="movie-year">{year}</p>
-      </div>
-      <button className="like-button" onClick={handleLikeClick} type="button">
-        {isLiked ? "❤️" : "🤍"} Me gusta
-      </button>
-    </div>
-  );
-};
+import { JsonFilmRepository } from "./core/infrastructure/JsonFilmRepository";
+import { FilmService } from "./core/service/getFilms";
 
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState(false);
   const [films, setFilms] = useState([]);
   const [filteredFilms, setFilteredFilms] = useState([]);
 
-  const getAllFilms = () => {
-    const films = getFilms();
+  const getAllFilms = async () => {
+    const newFilmService = new FilmService(new JsonFilmRepository());
+    const films = await newFilmService.getAllFilms();
     return films;
   };
 
   useEffect(() => {
-    const fetcDataFilms = async () => {
-      const films = await getAllFilms();
-      setFilms(films);
+    const fetchDataFilms = async () => {
+      const allFilms = await getAllFilms();
+      setFilms(allFilms);
     };
-    fetcDataFilms();
+    fetchDataFilms();
   }, []);
 
-  const findByName = (films) => {
-    return films.title.toLowerCase().includes(searchTerm.toLowerCase());
+  const findByName = (film) => {
+    return film.title.toLowerCase().includes(searchTerm.toLowerCase());
   };
 
   useEffect(() => {
-    console.log(films.films);
-    // console.log(films.films.filter(films.film));
-    // setFilteredFilms(films.films.filter((film) => findByName(film)));
-
-    setFilter(false);
+    if (!films.length) return;
+    const results = films.filter(findByName);
+    setFilteredFilms(results);
   }, [films, searchTerm]);
 
   return (
@@ -71,18 +53,21 @@ export const App = () => {
         </div>
 
         <section>
-          {!filter && filteredFilms.length > 0 && (
+          {filteredFilms.length > 0 && (
             <ul className="grid" data-testid="grid">
-              {filteredFilms.map((key, index) => {
-                <li key={res.id}>
-                  <p>{filteredFilms.title[index]}</p>
-                  <p>{filteredFilms.title[key]}</p>
-                </li>;
-              })}
+              {filteredFilms.map((film) => (
+                <li key={film.id}>
+                  <p>{film.title}</p>
+                  <p>{film.year}</p>
+                </li>
+              ))}
             </ul>
           )}
         </section>
-        <Movie filteredFilms={films}></Movie>
+
+        {filteredFilms.map((film) => (
+          <Movie key={film.id} title={film.title} year={film.year} />
+        ))}
 
         <div className="placeholder">
           <p>
