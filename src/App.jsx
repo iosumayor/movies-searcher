@@ -34,8 +34,6 @@ export const App = () => {
     setFilter(false);
   }, [films, searchTerm]);
 
-  console.log(films);
-
   return (
     <div className="App">
       <header className="app-header">
