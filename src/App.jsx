@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import movies from "./data/movies.json";
+import { getFilms } from "./service/getFilms";
 
 const Movie = ({ title, year }) => {
   return (
@@ -15,6 +16,21 @@ const Movie = ({ title, year }) => {
 
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [films, setFilms] = useState([]);
+
+  const getAllFilms = async () => {
+    const films = getFilms();
+    return films;
+  };
+
+  useEffect(() => {
+    const fetcDataFilms = async () => {
+      const films = await getAllFilms();
+      setFilms(films);
+      console.log(films);
+    };
+    fetcDataFilms();
+  }, []);
 
   return (
     <div className="App">
@@ -34,7 +50,7 @@ export const App = () => {
           />
         </div>
 
-        {/* Tu código aquí */}
+        <section></section>
 
         <div className="placeholder">
           <p>
