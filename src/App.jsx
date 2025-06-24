@@ -16,9 +16,11 @@ const Movie = ({ title, year }) => {
 
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState(false);
   const [films, setFilms] = useState([]);
+  const [filteredFilms, setFilteredFilms] = useState([]);
 
-  const getAllFilms = async () => {
+  const getAllFilms = () => {
     const films = getFilms();
     return films;
   };
@@ -27,10 +29,20 @@ export const App = () => {
     const fetcDataFilms = async () => {
       const films = await getAllFilms();
       setFilms(films);
-      console.log(films);
     };
     fetcDataFilms();
   }, []);
+
+  const findByName = (films) => {
+    return films.title.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+
+  useEffect(() => {
+    console.log(films);
+    setFilteredFilms(films);
+
+    setFilter(false);
+  }, [films, searchTerm]);
 
   return (
     <div className="App">
@@ -50,7 +62,18 @@ export const App = () => {
           />
         </div>
 
-        <section></section>
+        <section>
+          {!filter && filteredFilms.length > 0 && (
+            <ul className="grid" data-testid="grid">
+              {filteredFilms.map((key, index) => {
+                <li key={res.id}>
+                  <p>{filteredFilms.title[index]}</p>
+                  <p>{filteredFilms.title[key]}</p>
+                </li>;
+              })}
+            </ul>
+          )}
+        </section>
 
         <div className="placeholder">
           <p>
